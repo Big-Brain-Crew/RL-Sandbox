@@ -14,6 +14,11 @@ class GridWorld():
         self.randomize_goal = randomize_goal
         self.goal_position = np.array(goal_position)
 
+        # Define variables
+        self.state = None
+        self.steps = 0
+        self.total_reward = 0
+
     def __observation__(self):
         # Observation is the current agent state concatenated with the position of the goal
         return [self.state[0], self.state[1], self.goal_position[0], self.goal_position[1]]
@@ -21,27 +26,27 @@ class GridWorld():
 
     # Action should be an integer from 0-3 inclusive
     def __take_action__(self, action):
-        # Left
-        # If on left edge of grid, do nothing
+        # Up
+        # If on top edge of grid, do nothing
         if(action == 0):
             if(self.state[0] > 0):
                 self.state[0] -= 1
 
-        # Right
-        # If on right edge of grid, do nothing
+        # Down
+        # If on bottom edge of grid, do nothing
         elif(action == 1):
             if(self.state[0] < self.grid_dim[0] - 1):
                 self.state[0] += 1
 
-        # Up
-        # If on top edge of grid, do nothing
+        # left
+        # If on left edge of grid, do nothing
         elif(action == 2):
             if(self.state[1] > 0):
                 self.state[1] -= 1
 
-        # Down
-        # If on left edge of grid, do nothing
-        elif(action == 4):
+        # Right
+        # If on right edge of grid, do nothing
+        elif(action == 3):
             if(self.state[1] < self.grid_dim[1] - 1):
                 self.state[1] += 1
 
@@ -80,7 +85,7 @@ class GridWorld():
         self.steps += 1
 
         # Check if goal is reached
-        done = (self.state == self.goal_position)
+        done = np.array_equal(self.state, self.goal_position)
 
         # If done, compile stats about the simulation
         info = {
@@ -88,9 +93,30 @@ class GridWorld():
             "total_reward" : self.total_reward
         }
 
-        return self.__observation__(), self.__reward__(), done, info
+        return self.__observation__(), reward, done, info
 
-    def print_state(self):
+    def __str__(self):
+        if(self.state is None):
+            return "Environment not yet initialized. Call reset() to initiliaze"
+
+        outStr = ""
+
+        for i in range(self.grid_dim[0]):
+            for j in range(self.grid_dim[1]):
+                if(i == self.state[0] and j == self.state[1]):
+                    outStr += "O"
+                elif(i == self.goal_position[0] == j == self.goal_position[1]):
+                    outStr += "X"
+                else:
+                    outStr += " "
+            outStr += "\n"
+
+        return outStr
+
+
+
+
+
 
 
 
